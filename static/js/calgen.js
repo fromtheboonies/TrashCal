@@ -1,9 +1,22 @@
 var gDebug = false;
-var holidays = [
+var lincolnHolidays = [
     new Date("2024-01-01T00:00:00"), // new years
     new Date("2024-05-27T00:00:00"), // memorial day
     new Date("2024-07-04T00:00:00"), // independence day
     new Date("2024-09-02T00:00:00"), // labor day
+    new Date("2024-11-28T00:00:00"), // thanksgiving
+    new Date("2024-12-25T00:00:00"), // christmas
+];
+
+var holidays = [
+    new Date("2024-01-01T00:00:00"), // new years
+    new Date("2024-01-15T00:00:00"), // Martin Luther King day
+    new Date("2024-02-19T00:00:00"), // President's Day
+    new Date("2024-03-29T00:00:00"), // Good Friday
+    new Date("2024-05-27T00:00:00"), // memorial day
+    new Date("2024-07-04T00:00:00"), // independence day
+    new Date("2024-09-02T00:00:00"), // labor day
+    new Date("2024-11-11T00:00:00"), // Veteran's Day
     new Date("2024-11-28T00:00:00"), // thanksgiving
     new Date("2024-12-25T00:00:00"), // christmas
 ];
@@ -29,7 +42,7 @@ function trashCal(writeToIcsFile){
     var prevCollectionDay = startDate;
     var prevRecycleDay = startDate;
     
-    if(daysDifference(startDate, firstRecycleDate) != 0) {
+    if(daysDifference(startDate, firstRecycleDate) != 0 && !holidayWeekCheck(firstRecycleDate)) {
        prevRecycleDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()-7);
     }
     
@@ -94,9 +107,11 @@ function writeIcsFile(collectionDays) {
         +'VERSION:3\n';
     
     var nameAttribute = $('#fileName').val();  
+    var fileName = 'Recycling Calendar.ics';
 
-    if(nameAttribute && nameAttribute.trim().length() > 0) {
-        output += 'NAME: '+nameAttribute + ' ' + collectionDayName
+    if(nameAttribute && nameAttribute.trim().length > 0) {
+        fileName = nameAttribute + '.ics';
+        output += 'NAME: '+nameAttribute + ' - ' + collectionDayName + ' \n';
     } else {
         output += 'NAME: Recycling and Holiday Trash Collection Schedule ' + collectionDayName + ' \n';
     }
@@ -118,7 +133,7 @@ function writeIcsFile(collectionDays) {
     
     var elem = document.createElement('a');
     elem.setAttribute('href', 'data:text/calendar;charset=utf-8,' + encodeURIComponent(output));
-    elem.setAttribute('download','Recycling Calendar.ics');
+    elem.setAttribute('download', fileName);
 
     elem.style.display = 'none';
     document.body.appendChild(elem);
@@ -129,20 +144,39 @@ function writeIcsFile(collectionDays) {
 function holidayWeekCheck(checkDate) {
     var debug = gDebug || false;
     var isHolidayWeek = false;
-
+    
     holidays.forEach(function(holiday) {   
         var diff = daysDifference(holiday, checkDate);
-        if(diff==0 || (diff > 0 && diff <= 4 )) {
+        
+        if(diff==0) {
             isHolidayWeek = true;
             return;
+        } else if (diff > 0) {
+            if(diff == 1 && checkDate.getDay() == 1) {
+                isHolidayWeek = true;
+                return;
+            } else if (diff <= 2 && checkDate.getDay() == 2) {
+                isHolidayWeek = true;
+                return;
+            } else if (diff <= 3 && checkDate.getDay() == 3) {
+                isHolidayWeek = true;
+                return;
+            } else if (diff <=4 && checkDate.getDay() == 4) {
+                isHolidayWeek = true;
+                return;
+            } else if (diff <=5 && checkDate.getDay() == 5) {
+                isHolidayWeek = true;
+                return;
+            } 
+            
         }
     });
 
     if(debug) {
         if(isHolidayWeek) {
-            console.log(formatDate(checkDate) + ' is in holiday week!');
+            console.log(formatDate(checkDate) + ' is a ' + dayName[checkDate.getDay()] + ' in holiday week!');
         } else {
-            console.log(formatDate(checkDate) + ' is NOT in holiday week');
+            console.log(formatDate(checkDate) + ' is a ' + dayName[checkDate.getDay()] + ' is NOT in holiday week');
         }
     }
     return isHolidayWeek;
