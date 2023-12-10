@@ -20,11 +20,14 @@
         </div>
         
         <div class="mb-3">
-            <label for="startDate">First Recycle Date:</label>
-            <input type="date" id="startDate" min="2021-01-01" title="Start Date" value="2023-01-01">
+            <label for="startDate">Calendar Start Date:</label>
+            <input type="date" id="startDate" min="2021-01-01" title="Start Date" value="2024-01-01">
 
-            <label for="endDate">End Date:</label>
-            <input type="date" id="endDate" min="2021-12-01" title="Start Date" value="2023-12-31">
+            <label for="endDate">Calendar End Date:</label>
+            <input type="date" id="endDate" min="2021-12-01" title="End Date" value="2024-12-31">
+
+            <label for="startDate">First Recycling Collection Date:</label>
+            <input type="date" id="firstRecycleCollectionDate" min="2021-01-01" title="First Recycling Collection Date" value="2024-01-01">
         </div>
         <div class="mb-3">
             <label for="collectionDay">Collection Day:</label>
@@ -45,12 +48,11 @@
         </div>
 
 
-        <button type="button" class="btn btn-primary" onclick="trashCal();">Generate ICS File</button>
+        <button type="button" class="btn btn-primary" onclick="trashCal(false);">Generate Dates</button>
+        <button type="button" class="btn btn-primary" onclick="trashCal(true);">Generate ICS File</button>
 
         
     </form>
-    
-    
     
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>

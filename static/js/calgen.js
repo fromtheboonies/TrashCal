@@ -1,31 +1,39 @@
 var gDebug = false;
 var holidays = [
-    new Date("2023-01-02T00:00:00"), // new years
-    new Date("2023-05-29T00:00:00"), 
-    new Date("2023-07-04T00:00:00"),
-    new Date("2023-09-04T00:00:00"),
-    new Date("2023-11-23T00:00:00"),
-    new Date("2023-12-25T00:00:00"),
+    new Date("2024-01-01T00:00:00"), // new years
+    new Date("2024-05-27T00:00:00"), // memorial day
+    new Date("2024-07-04T00:00:00"), // independence day
+    new Date("2024-09-02T00:00:00"), // labor day
+    new Date("2024-11-28T00:00:00"), // thanksgiving
+    new Date("2024-12-25T00:00:00"), // christmas
 ];
 
 const dayName = ['Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat'];
 var collectionDayName = '';
 
-function trashCal(){
+function trashCal(writeToIcsFile){
     
-    var sStartDate = $("#startDate").val();
-    var sEndDate = $("#endDate").val();
+    let sStartDate = $("#startDate").val();
+    let sEndDate = $("#endDate").val();
+    let sFirstRecycleDate = $("#firstRecycleCollectionDate").val();
 
     var startDate = new Date(sStartDate+'T00:00:00');
     var endDate = new Date(sEndDate+'T00:00:00');
+    var firstRecycleDate = new Date(sFirstRecycleDate+'T00:00:00');
     
-    var collectionDay = $('#collectionDay').val();
+    let collectionDay = $('#collectionDay').val();
     collectionDayName = dayName[collectionDay];
 
     startDate = initializeStartDateToCollectionDay(startDate, collectionDay);
-
+    
     var prevCollectionDay = startDate;
     var prevRecycleDay = startDate;
+    
+    if(daysDifference(startDate, firstRecycleDate) != 0) {
+       prevRecycleDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()-7);
+    }
+    
+    
     var nextCollectionDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
 
     var genRecycleAndHolidayOnly = $('#recycleOnlyInd').val()==='on';
@@ -34,13 +42,13 @@ function trashCal(){
     var collectionDays = [];
 
     while(nextCollectionDay <= endDate) {
-        var isInHolidayWeek = holidayWeekCheck(nextCollectionDay);
-        var isTrashOnly = false;
-        var daysLastRecycled = daysDifference(prevRecycleDay, nextCollectionDay);
+        let isInHolidayWeek = holidayWeekCheck(nextCollectionDay);
+        let isTrashOnly = false;
+        let daysLastRecycled = daysDifference(prevRecycleDay, nextCollectionDay);
 
         if(isInHolidayWeek) {
-            var modifiedDate = new Date(nextCollectionDay.getFullYear(), nextCollectionDay.getMonth(), nextCollectionDay.getDate()+1);
-            
+            let modifiedDate = new Date(nextCollectionDay.getFullYear(), nextCollectionDay.getMonth(), nextCollectionDay.getDate()+1);
+                        
             if(daysLastRecycled > 0 && daysLastRecycled <= 7) {
                 isTrashOnly = true;
                 //console.log('Holiday Week Trash Only',modifiedDate);
@@ -73,8 +81,11 @@ function trashCal(){
     }
 
     console.log('collectionDays: ', collectionDays);
-    writeIcsFile(collectionDays);
- 
+    if(writeToIcsFile) {
+        writeIcsFile(collectionDays);
+    }
+    
+    return collectionDays;
 }
 
 function writeIcsFile(collectionDays) {
