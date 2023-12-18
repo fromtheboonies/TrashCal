@@ -9,7 +9,7 @@ Tool for calculating recycling collection date schedule with holiday adjustments
 
 
 ## How to use:
-Just download/clone the repo to your system, then open trashcal.html page in your browser (Ctrl+O).  Requires internet connection to download required jQuery and Bootstrap dependencies.
+Just download/clone the repo to your system, then open index.html page in your browser (Ctrl+O).  Requires internet connection to download required jQuery and Bootstrap dependencies.
 
 Holiday selections are currently defined as a hard-coded array for 2024 dates at the top of the calgen.js file - add any additional required dates you need.  
 
