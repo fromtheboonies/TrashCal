@@ -21,16 +21,16 @@ class Holiday {
  * list of holidays used for generating checkboxes
  */
 var holidays = [ 
-    new Holiday(new Date("2024-01-01T00:00:00"), 'New Years Day'),
-    new Holiday(new Date("2024-01-15T00:00:00"), 'Martin Luther King day'),
-    new Holiday(new Date("2024-02-19T00:00:00"), 'President\'s Day'),
-    new Holiday(new Date("2024-03-29T00:00:00"), 'Good Friday'),
-    new Holiday(new Date("2024-05-27T00:00:00"), 'Memorial Day'),
-    new Holiday(new Date("2024-07-04T00:00:00"), 'Independence Day'),
-    new Holiday(new Date("2024-09-02T00:00:00"), 'Labor Day'),
-    new Holiday(new Date("2024-11-11T00:00:00"), 'Veteran\'s Day'),
-    new Holiday(new Date("2024-11-28T00:00:00"), 'Thanksgiving'),
-    new Holiday(new Date("2024-12-25T00:00:00"), 'Christmas')
+    new Holiday(new Date("2025-01-01T00:00:00"), 'New Years Day'),
+    new Holiday(new Date("2025-01-20T00:00:00"), 'Martin Luther King day'),
+    new Holiday(new Date("2025-02-17T00:00:00"), 'President\'s Day'),
+    new Holiday(new Date("2025-04-18T00:00:00"), 'Good Friday'),
+    new Holiday(new Date("2025-05-26T00:00:00"), 'Memorial Day'),
+    new Holiday(new Date("2025-07-04T00:00:00"), 'Independence Day'),
+    new Holiday(new Date("2025-09-01T00:00:00"), 'Labor Day'),
+    new Holiday(new Date("2025-11-11T00:00:00"), 'Veteran\'s Day'),
+    new Holiday(new Date("2025-11-27T00:00:00"), 'Thanksgiving'),
+    new Holiday(new Date("2025-12-25T00:00:00"), 'Christmas')
 
 ];
 
@@ -370,12 +370,15 @@ function setHolidaySelectionsByGroup(holidayGroup) {
 
 function setLincolnHolidays() {
     $('#newyearsday').prop('checked',true);
+    $('#martinlutherkingday').prop('checked',true);
+    $('#presidentsday').prop('checked',true);
+    $('#goodfriday').prop('checked',true);
     $('#memorialday').prop('checked',true);
     $('#independenceday').prop('checked',true);
     $('#laborday').prop('checked',true);
+    $('#veteransday').prop('checked',true);
     $('#thanksgiving').prop('checked',true);
-    $('#christmas').prop('checked',true);
-    
+    $('#christmas').prop('checked',true);    
 }
 
 function setBismarckHolidays() {
