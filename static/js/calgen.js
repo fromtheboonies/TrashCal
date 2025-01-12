@@ -17,22 +17,6 @@ class Holiday {
     }
 }
 
-/**
- * list of holidays used for generating checkboxes
- */
-var holidays = [ 
-    new Holiday(new Date("2025-01-01T00:00:00"), 'New Years Day'),
-    new Holiday(new Date("2025-01-20T00:00:00"), 'Martin Luther King day'),
-    new Holiday(new Date("2025-02-17T00:00:00"), 'President\'s Day'),
-    new Holiday(new Date("2025-04-18T00:00:00"), 'Good Friday'),
-    new Holiday(new Date("2025-05-26T00:00:00"), 'Memorial Day'),
-    new Holiday(new Date("2025-07-04T00:00:00"), 'Independence Day'),
-    new Holiday(new Date("2025-09-01T00:00:00"), 'Labor Day'),
-    new Holiday(new Date("2025-11-11T00:00:00"), 'Veteran\'s Day'),
-    new Holiday(new Date("2025-11-27T00:00:00"), 'Thanksgiving'),
-    new Holiday(new Date("2025-12-25T00:00:00"), 'Christmas')
-
-];
 
 /**
  * Collection to get day name for selected index value
@@ -172,7 +156,7 @@ function holidayWeekCheck(checkDate) {
     let selectedHolidays = getSelectedHolidays();
 
     if(selectedHolidays.length == 0) {
-        selectedHolidays = holidays;
+        selectedHolidays = getHolidaysForYear(new Date().getFullYear());
     }
 
     selectedHolidays.forEach(function(holiday) {   
@@ -251,16 +235,24 @@ function icalDateFormat(date){
  * @returns 
  */
 function initializeStartDateToCollectionDay(startDate, dayOfWeek) {
+    let debug = false || gDebug;
     var adjStartDate = startDate;
 
-    console.log('initializeStartDate: '+ startDate +' startDateDay= ' + startDate.getDay() + ' dayOfWeek ' + dayOfWeek);
+    if(debug) {
+        console.log('initializeStartDate: '+ startDate +' startDateDay= ' + startDate.getDay() + ' dayOfWeek ' + dayOfWeek);
+    }
+    
 
     while(adjStartDate.getDay() != dayOfWeek) {
         adjStartDate.setDate(adjStartDate.getDate()+1);
-        console.log('incremented day', adjStartDate);
+        if(debug) {
+            console.log('incremented day', adjStartDate);
+        }
     }
 
-    console.log('initializeStartDate: '+ adjStartDate +' adjStartDateDay= ' + adjStartDate.getDay() + ' dayOfWeek ' + dayOfWeek);
+    if(debug) {
+        console.log('initializeStartDate: '+ adjStartDate +' adjStartDateDay= ' + adjStartDate.getDay() + ' dayOfWeek ' + dayOfWeek);
+    }
     return adjStartDate;
 }
 
@@ -269,6 +261,19 @@ function initializeStartDateToCollectionDay(startDate, dayOfWeek) {
  */
 function generateHolidayBoxes() {
     let datesContainer = document.getElementById("holidaysContainer");
+    let year = document.getElementById('holidayYear');
+    let holidays = [];
+
+    // wipe current holidays list
+    document.getElementById("holidaysContainer").replaceChildren();
+
+    if (year != undefined && year.value != '') {
+        holidays = getHolidaysForYear(year.value);
+    } else {
+        year = new Date().getFullYear();
+        holidays = getHolidaysForYear(year);
+    }
+    
 
     holidays.forEach((holiday) => {
         let dateContainer = document.createElement("div");
@@ -283,7 +288,7 @@ function generateHolidayBoxes() {
 
         let label = document.createElement("label");
         label.htmlFor = dateBox.id;
-        label.appendChild(document.createTextNode(holiday.description));
+        label.appendChild(document.createTextNode(holiday.description + ' ' + formatDate(holiday.date)));
         label.title = formatDate(holiday.date);
 
         dateContainer.appendChild(dateBox);
@@ -404,10 +409,135 @@ function testHolidayWeekCheck() {
 }
 
 
-$(function(){
+function getHolidaysForYear(year) {
     
-    generateHolidayBoxes();
+    const holidays = [
+        // New Year's Day is January 1st
+        new Holiday(new Date(`${year}-01-01T00:00:00`), 'New Years Day'),
+        
+        // Martin Luther King day is the third Monday of January
+        new Holiday(calculateHolidayDate(year, { month: 0, week: 3, weekday: 1 }), 'Martin Luther King Day'),
+        
+        // President's Day is the third Monday of February
+        new Holiday(calculateHolidayDate(year, { month: 1, week: 3, weekday: 1 }), 'President\'s Day'),
+        
+        // Good Friday is the day before Easter (Easter Sunday)
+        new Holiday(calculateGoodFriday(year), 'Good Friday'),
+        
+        // Memorial Day is the last Monday of May
+        new Holiday(calculateHolidayDate(year, { month: 4, week: -1, weekday: 1 }), 'Memorial Day'),
+        
+        // Independence Day is July 4th
+        new Holiday(new Date(`${year}-07-04T00:00:00`), 'Independence Day'),
+        
+        // Labor Day is the first Monday of September
+        new Holiday(calculateHolidayDate(year, { month: 8, week: 1, weekday: 1 }), 'Labor Day'),
+        
+        // Veteran's Day is November 11th (observed if on Sunday)
+        new Holiday(new Date(`${year}-11-11T00:00:00`), 'Veteran\'s Day'),
+        
+        // Thanksgiving is the fourth Thursday of November
+        new Holiday(calculateHolidayDate(year, { month: 10, week: 4, weekday: 4 }), 'Thanksgiving'),
+        
+        // Christmas is December 25th
+        new Holiday(new Date(`${year}-12-25T00:00:00`), 'Christmas')
+    ];
+    
+    return holidays;
+}
 
+function calculateGoodFriday(year) {
+    const easter = calculateEaster(year);
+    const goodFriday = new Date(easter);
+    goodFriday.setDate(easter.getDate() - 2);
+    return goodFriday;
+}
+
+/**
+ * Function to calculate Easter Sunday based on 'Laurent Longre' Algorithm
+ * https://stackoverflow.com/questions/1284314/easter-date-in-javascript
+ * @param {number} year
+ * @returns 
+ */
+function calculateEaster(year) {
+    let M=3, 
+    G= year % 19+1, 
+    C= ~~(year/100)+1, 
+    L=~~((3*C)/4)-12,
+    E=(11*G+20+ ~~((8*C+5)/25)-5-L)%30, 
+    D;
+    
+    E<0 && (E+=30);
+    (E==25 && G>11 || E==24) && E++;
+    (D=44-E)<21 && (D+=30);
+    (D+=7-(~~((5*year)/4)-L-10+D)%7)>31 && (D-=31,M=4);
+
+    return new Date(year, M-1, D);
+}
+
+/**
+ * Returns date for provided parameters. 
+ * Memorial Day is the last Monday of May - calculateHolidayDate(year, { month: 4, week: -1, weekday: 1 })
+ * 
+ * @param {number} year - YYYY
+ * @param {number} month - 0-indexed month, 0 is January 
+ * @param {number} week - -1 for last week of month, 1 for first instance of day in month, 2 for second, etc.
+ * @param {number} weekday - 0-indexed day of the week, 0 is Sunday
+ * @returns 
+ */
+function calculateHolidayDate(year, { month, week, weekday }) {
+    if(isNaN(year)) {
+        throw new Error("Invalid year");
+    } else if(isNaN(month) || month < 0 || month > 11) {
+        throw new Error("Invalid month - expected 0-11");
+    } else if(isNaN(week) || week > 4 || week < -1 || week === 0) {
+        throw new Error("Invalid week - expected values [-1 for last week, 1 for first week, 2 for second, 3 for third, 4 for fourth]");
+    } else if(isNaN(weekday) || weekday > 6 || weekday < 0) {
+        throw new Error("Invalid weekday - expected 0-6");
+    }
+
+    if (week === -1) { // Last week of the month
+        // initialize to the last day of the month 
+        let date = new Date(year, month + 1, 0);
+        
+        // iterate backwards to the specified weekday
+        while (date.getDay() !== weekday) {
+            date.setDate(date.getDate() - 1);
+        }
+        return date;
+    } else {
+        // initialize to first of month
+        let date = new Date(year, month, 1);
+
+        // Adjust to the specified weekday
+        while (date.getDay() !== weekday) {
+            date.setDate(date.getDate() + 1);
+        }
+        let weekCounter = 1;
+
+        while (weekCounter !== week && weekCounter < 5) {
+            date.setDate(date.getDate() + 7);
+            weekCounter += 1;
+        }
+        
+        return date;
+
+    }
+    
+}
+
+$(function(){
+    // default the year input to current year
+    let currYear = new Date().getFullYear(); 
+    let yearField = document.getElementById('holidayYear');
+    yearField.value = currYear;
+
+    // default start and end dates to beginning and end of current year
+    document.getElementById('startDate').defaultValue = currYear + '-01-01';
+    document.getElementById('endDate').defaultValue = currYear + '-12-31';
+    document.getElementById('firstRecycleCollectionDate').defaultValue = currYear + '-01-01';
+
+    generateHolidayBoxes();
 
 })
 

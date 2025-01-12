@@ -11,7 +11,7 @@ Tool for calculating recycling collection date schedule with holiday adjustments
 ## How to use:
 Just download/clone the repo to your system, then open index.html page in your browser (Ctrl+O).  Requires internet connection to download required jQuery and Bootstrap dependencies.
 
-Holiday selections are currently defined as a hard-coded array for 2024 dates at the top of the calgen.js file - add any additional required dates you need.  
+Holiday selections are currently defined as a hard-coded array at the top of the calgen.js file - add any additional required dates you need.  
 
 ## About:
 A few years ago, I got tired of forgetting which week was recycling collection and having to go 2 weeks longer with a full can because I missed the collection day.  
@@ -28,3 +28,6 @@ I was never really planning on opening this up as a public repo or doing much wi
 Why JavaScript?  Because I've been working on large monolithic Java apps full-time++ for the past 13 years and it's nice to work with something simpler that I don't get to use much in my day job.  I didn't want to have to rely on spinning up an application server to run the code or have to worry about installing some other app to run from the command line or Docker containers, so I made it self-contained with just static html and JavaScript files.  Makes me think of the old days circa 1999-2000ish when I learned to develop simple websites in school using just a text file in notepad and Internet Explorer.
 
 If you use this project's contents to make a boatload of money, remember your roots. At the very least, pay it forward some day.
+
+## Version History
+01/12/2025 - Updated from using hard-coded date values to using calculation algorithms based on provided year, month, week of month, and weekday values
